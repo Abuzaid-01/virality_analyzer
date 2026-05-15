@@ -37,7 +37,7 @@ Go Viral AI is a full-stack, multi-agent artificial intelligence platform that p
 │   ├── components/     # Reusable UI components
 │   └── lib/            # API clients and utilities
 │
-└── files (3)/          # FastAPI Python Backend
+└── backend/          # FastAPI Python Backend
     ├── main.py         # App entry point
     ├── graph.py        # LangGraph agent orchestration
     ├── *_agent.py      # Individual AI agents (vision, caption, trend, feedback, score)
@@ -56,7 +56,7 @@ You will need API keys for the following free services:
 ### 2. Backend Setup
 1. Navigate to the backend directory:
    ```bash
-   cd "files (3)"
+   cd backend
    ```
 2. Create and activate a virtual environment:
    ```bash
