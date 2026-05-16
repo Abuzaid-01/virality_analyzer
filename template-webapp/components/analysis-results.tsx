@@ -14,20 +14,21 @@ type AnalysisResultsProps = {
   onNewAnalysis: () => void
 }
 
-function SectionCard({ title, icon: Icon, children, accentColor }: {
+function SectionCard({ title, icon: Icon, children, accentColor, gradient }: {
   title: string
   icon: React.ElementType
   children: React.ReactNode
   accentColor?: string
+  gradient?: string
 }) {
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden">
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-border/30">
+    <div className="glass rounded-2xl overflow-hidden group hover:border-white/10 transition-all duration-500">
+      <div className="flex items-center gap-3 px-6 py-4 border-b border-white/[0.04]">
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: `${accentColor || "var(--primary)"}15` }}
+          className={`w-9 h-9 rounded-xl flex items-center justify-center ${gradient || ''}`}
+          style={!gradient ? { backgroundColor: `${accentColor || "#a855f7"}15` } : {}}
         >
-          <Icon className="w-4 h-4" style={{ color: accentColor || "var(--primary)" }} />
+          <Icon className="w-4 h-4" style={{ color: gradient ? 'white' : (accentColor || "#a855f7") }} />
         </div>
         <h3 className="font-semibold text-sm">{title}</h3>
       </div>
@@ -48,18 +49,18 @@ function CopyableText({ text, label }: { text: string; label: string }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">{label}</span>
+        <span className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">{label}</span>
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+          className="h-7 px-3 text-xs rounded-lg text-muted-foreground hover:text-violet-300 hover:bg-violet-500/10 transition-all"
           onClick={handleCopy}
         >
           {copied ? <Check className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
-          {copied ? "Copied" : "Copy"}
+          {copied ? "Copied!" : "Copy"}
         </Button>
       </div>
-      <div className="rounded-xl bg-white/[0.03] border border-border/30 p-4">
+      <div className="rounded-xl bg-white/[0.02] border border-white/[0.05] p-5 hover:border-violet-500/15 transition-colors">
         <p className="text-sm leading-relaxed whitespace-pre-wrap">{text}</p>
       </div>
     </div>
@@ -70,25 +71,25 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
   const { visual, trend, caption, improvements } = analysis
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* ── Hero Score Section ────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-sm p-8">
+      <div className="glass rounded-3xl p-8 sm:p-10 glow-violet">
         <div className="flex flex-col lg:flex-row items-center gap-8">
-          <ScoreRing score={analysis.virality_score} size={180} strokeWidth={12} />
-          <div className="flex-1 text-center lg:text-left space-y-3">
-            <h2 className="text-2xl font-bold">Virality Score</h2>
+          <ScoreRing score={analysis.virality_score} size={200} strokeWidth={14} />
+          <div className="flex-1 text-center lg:text-left space-y-4">
+            <h2 className="text-3xl font-bold">Virality Score</h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
               {analysis.one_line_verdict}
             </p>
-            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-border/30">
-                <Clock className="w-3 h-3" />
+            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium glass border-white/[0.06]">
+                <Clock className="w-3 h-3 text-violet-400" />
                 {analysis.processing_time_seconds.toFixed(1)}s
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-border/30 capitalize">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium glass border-white/[0.06] capitalize">
                 {analysis.platform}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-border/30 capitalize">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium glass border-white/[0.06] capitalize">
                 {analysis.content_type}
               </span>
             </div>
@@ -97,9 +98,9 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
       </div>
 
       {/* ── Score Breakdown Grid ──────────────────────────────────────────── */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-5">
         {/* Visual Analysis */}
-        <SectionCard title="Visual Analysis" icon={Eye} accentColor="#8b5cf6">
+        <SectionCard title="Visual Analysis" icon={Eye} gradient="bg-gradient-to-br from-violet-500 to-purple-600">
           <div className="space-y-4">
             <MiniScoreBar score={visual.hook_score} label="Hook (First 3 Sec)" />
             <MiniScoreBar score={visual.thumbnail_score} label="Thumbnail Quality" />
@@ -107,31 +108,31 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
             <MiniScoreBar score={visual.pacing_score} label="Pacing & Editing" />
           </div>
           {visual.hook_feedback && (
-            <div className="mt-4 pt-4 border-t border-border/20">
+            <div className="mt-5 pt-5 border-t border-white/[0.04]">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                <span className="font-medium text-foreground">Hook:</span> {visual.hook_feedback}
+                <span className="font-semibold text-foreground">Hook:</span> {visual.hook_feedback}
               </p>
             </div>
           )}
           {visual.thumbnail_feedback && (
             <div className="mt-2">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                <span className="font-medium text-foreground">Thumbnail:</span> {visual.thumbnail_feedback}
+                <span className="font-semibold text-foreground">Thumbnail:</span> {visual.thumbnail_feedback}
               </p>
             </div>
           )}
         </SectionCard>
 
         {/* Caption Analysis */}
-        <SectionCard title="Caption Analysis" icon={MessageSquare} accentColor="#06b6d4">
+        <SectionCard title="Caption Analysis" icon={MessageSquare} gradient="bg-gradient-to-br from-cyan-500 to-blue-600">
           <div className="space-y-4">
             <MiniScoreBar score={caption.caption_score} label="Caption Effectiveness" />
             <MiniScoreBar score={caption.hook_text_score} label="Hook Text Strength" />
           </div>
-          <div className="mt-4 pt-4 border-t border-border/20 space-y-3">
+          <div className="mt-5 pt-5 border-t border-white/[0.04] space-y-3">
             <div className="flex items-center gap-2 text-xs">
               <span className="text-muted-foreground">CTA Present:</span>
-              <span className={`font-medium ${caption.cta_present ? "text-green-400" : "text-orange-400"}`}>
+              <span className={`font-semibold ${caption.cta_present ? "text-emerald-400" : "text-amber-400"}`}>
                 {caption.cta_present ? "Yes" : "No"}
                 {caption.cta_strength && ` (${caption.cta_strength})`}
               </span>
@@ -141,7 +142,7 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
                 {caption.emotion_triggers.map((trigger, i) => (
                   <span
                     key={i}
-                    className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/15"
                   >
                     {trigger}
                   </span>
@@ -152,22 +153,22 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
         </SectionCard>
 
         {/* Trend Analysis */}
-        <SectionCard title="Trend Alignment" icon={TrendingUp} accentColor="#22c55e">
+        <SectionCard title="Trend Alignment" icon={TrendingUp} gradient="bg-gradient-to-br from-emerald-500 to-teal-600">
           <MiniScoreBar score={trend.trend_alignment_score} label="Trend Score" />
-          <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+          <p className="mt-5 text-xs text-muted-foreground leading-relaxed">
             {trend.trend_summary}
           </p>
           {trend.best_posting_times.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-border/20">
+            <div className="mt-5 pt-5 border-t border-white/[0.04]">
               <div className="flex items-center gap-1.5 mb-2">
-                <Clock className="w-3 h-3 text-green-400" />
-                <span className="text-xs font-medium">Best Posting Times</span>
+                <Clock className="w-3 h-3 text-emerald-400" />
+                <span className="text-xs font-semibold">Best Posting Times</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {trend.best_posting_times.map((time, i) => (
                   <span
                     key={i}
-                    className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-500/10 text-green-400 border border-green-500/20"
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/15"
                   >
                     {time}
                   </span>
@@ -176,12 +177,12 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
             </div>
           )}
           {trend.platform_specific_tips.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-border/20">
-              <span className="text-xs font-medium mb-2 block">Platform Tips</span>
-              <ul className="space-y-1.5">
+            <div className="mt-5 pt-5 border-t border-white/[0.04]">
+              <span className="text-xs font-semibold mb-2 block">Platform Tips</span>
+              <ul className="space-y-2">
                 {trend.platform_specific_tips.map((tip, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
-                    <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-green-400" />
+                    <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-emerald-400" />
                     {tip}
                   </li>
                 ))}
@@ -191,18 +192,18 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
         </SectionCard>
 
         {/* Improvement Plan */}
-        <SectionCard title="Improvement Plan" icon={Lightbulb} accentColor="#f59e0b">
-          <div className="space-y-4">
+        <SectionCard title="Improvement Plan" icon={Lightbulb} gradient="bg-gradient-to-br from-amber-500 to-orange-600">
+          <div className="space-y-5">
             {/* Priority Fixes */}
             <div>
-              <div className="flex items-center gap-1.5 mb-2">
+              <div className="flex items-center gap-1.5 mb-3">
                 <AlertTriangle className="w-3 h-3 text-amber-400" />
-                <span className="text-xs font-medium text-amber-400">Priority Fixes</span>
+                <span className="text-xs font-semibold text-amber-400">Priority Fixes</span>
               </div>
               <ul className="space-y-2">
                 {improvements.priority_fixes.map((fix, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground bg-amber-500/5 rounded-lg p-2.5 border border-amber-500/10">
-                    <span className="flex-shrink-0 w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[9px] font-bold mt-0.5">
+                  <li key={i} className="flex items-start gap-3 text-xs text-muted-foreground bg-amber-500/5 rounded-xl p-3 border border-amber-500/10">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px] font-bold mt-0.5">
                       {i + 1}
                     </span>
                     {fix}
@@ -214,14 +215,14 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
             {/* Quick Wins */}
             {improvements.quick_wins.length > 0 && (
               <div>
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Zap className="w-3 h-3 text-green-400" />
-                  <span className="text-xs font-medium text-green-400">Quick Wins</span>
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Zap className="w-3 h-3 text-emerald-400" />
+                  <span className="text-xs font-semibold text-emerald-400">Quick Wins</span>
                 </div>
                 <ul className="space-y-1.5">
                   {improvements.quick_wins.map((win, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
-                      <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-green-400" />
+                      <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-emerald-400" />
                       {win}
                     </li>
                   ))}
@@ -232,9 +233,9 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
             {/* What Works */}
             {improvements.what_works.length > 0 && (
               <div>
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center gap-1.5 mb-3">
                   <Star className="w-3 h-3 text-cyan-400" />
-                  <span className="text-xs font-medium text-cyan-400">What Works</span>
+                  <span className="text-xs font-semibold text-cyan-400">What Works</span>
                 </div>
                 <ul className="space-y-1.5">
                   {improvements.what_works.map((item, i) => (
@@ -248,9 +249,9 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
             )}
 
             {/* Predicted Score */}
-            <div className="mt-4 pt-4 border-t border-border/20 flex items-center justify-between">
+            <div className="mt-5 pt-5 border-t border-white/[0.04] flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Score after fixes</span>
-              <span className="text-lg font-bold text-green-400">
+              <span className="text-xl font-black text-emerald-400">
                 {improvements.predicted_score_after_fixes}
                 <span className="text-xs font-normal text-muted-foreground ml-1">/100</span>
               </span>
@@ -260,7 +261,7 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
       </div>
 
       {/* ── Optimized Caption ──────────────────────────────────────────────── */}
-      <SectionCard title="AI-Optimized Content" icon={MessageSquare} accentColor="#a855f7">
+      <SectionCard title="AI-Optimized Content" icon={MessageSquare} gradient="bg-gradient-to-br from-violet-500 to-fuchsia-600">
         <div className="space-y-6">
           <CopyableText
             label="Optimized Hook"
@@ -274,9 +275,9 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
       </SectionCard>
 
       {/* ── Hashtags & Audio ───────────────────────────────────────────────── */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-5">
         {/* Hashtags */}
-        <SectionCard title="Recommended Hashtags" icon={Hash} accentColor="#3b82f6">
+        <SectionCard title="Recommended Hashtags" icon={Hash} gradient="bg-gradient-to-br from-blue-500 to-indigo-600">
           <div className="flex flex-wrap gap-2">
             {(caption.hashtag_suggestions?.length > 0
               ? caption.hashtag_suggestions
@@ -284,7 +285,7 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
             ).map((tag, i) => (
               <span
                 key={i}
-                className="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/15 cursor-pointer hover:bg-blue-500/20 transition-colors"
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/10 cursor-pointer hover:bg-blue-500/20 hover:scale-105 transition-all duration-200"
                 onClick={() => navigator.clipboard.writeText(tag.startsWith("#") ? tag : `#${tag}`)}
               >
                 {tag.startsWith("#") ? tag : `#${tag}`}
@@ -295,12 +296,12 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
 
         {/* Trending Audio */}
         {trend.trending_audio_suggestions.length > 0 && (
-          <SectionCard title="Trending Audio" icon={Music} accentColor="#ec4899">
+          <SectionCard title="Trending Audio" icon={Music} gradient="bg-gradient-to-br from-pink-500 to-rose-600">
             <ul className="space-y-2.5">
               {trend.trending_audio_suggestions.map((audio, i) => (
                 <li
                   key={i}
-                  className="flex items-center gap-3 text-sm text-muted-foreground p-2.5 rounded-lg bg-pink-500/5 border border-pink-500/10"
+                  className="flex items-center gap-3 text-sm text-muted-foreground p-3 rounded-xl bg-pink-500/5 border border-pink-500/8 hover:bg-pink-500/10 transition-colors"
                 >
                   <Music className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" />
                   {audio}
@@ -312,8 +313,12 @@ export function AnalysisResults({ analysis, onNewAnalysis }: AnalysisResultsProp
       </div>
 
       {/* ── Action Bar ─────────────────────────────────────────────────────── */}
-      <div className="flex justify-center pt-4">
-        <Button size="lg" onClick={onNewAnalysis} className="px-8">
+      <div className="flex justify-center pt-6">
+        <Button
+          size="lg"
+          onClick={onNewAnalysis}
+          className="px-10 py-6 text-base rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-lg shadow-violet-600/20 hover:shadow-violet-500/30 transition-all duration-300 border-0"
+        >
           Analyze Another
         </Button>
       </div>

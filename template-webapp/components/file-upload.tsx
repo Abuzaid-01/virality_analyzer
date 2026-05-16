@@ -37,7 +37,6 @@ export function FileUpload({ onFileSelect, file, onClear, isUploading, maxSizeMb
 
   const handleFile = useCallback((f: File) => {
     if (!validateFile(f)) return
-    // Create preview for images
     if (ALLOWED_IMAGE.includes(f.type)) {
       const url = URL.createObjectURL(f)
       setPreview(url)
@@ -60,33 +59,34 @@ export function FileUpload({ onFileSelect, file, onClear, isUploading, maxSizeMb
   }, [handleFile])
 
   const isVideo = file && ALLOWED_VIDEO.includes(file.type)
-  const isImage = file && ALLOWED_IMAGE.includes(file.type)
 
   if (file) {
     return (
-      <div className="relative rounded-2xl border border-border/50 bg-card/30 p-6">
-        <div className="flex items-start gap-4">
+      <div className="relative glass rounded-2xl p-6 glow-border animate-fade-in">
+        <div className="flex items-start gap-5">
           {/* Preview / Icon */}
-          <div className="flex-shrink-0 w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden">
+          <div className="flex-shrink-0 w-24 h-24 rounded-xl bg-white/[0.04] flex items-center justify-center overflow-hidden border border-white/[0.06]">
             {preview ? (
               <img src={preview} alt="Preview" className="w-full h-full object-cover" />
             ) : isVideo ? (
-              <FileVideo className="w-8 h-8 text-primary" />
+              <FileVideo className="w-8 h-8 text-violet-400" />
             ) : (
-              <Image className="w-8 h-8 text-primary" />
+              <Image className="w-8 h-8 text-violet-400" />
             )}
           </div>
 
           {/* File info */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{file.name}</p>
-            <p className="text-xs text-muted-foreground mt-1">
+          <div className="flex-1 min-w-0 pt-1">
+            <p className="text-sm font-semibold truncate">{file.name}</p>
+            <p className="text-xs text-muted-foreground mt-1.5">
               {(file.size / 1024 / 1024).toFixed(2)} MB · {isVideo ? "Video" : "Image"}
             </p>
             {isUploading && (
-              <div className="flex items-center gap-2 mt-2">
-                <Loader2 className="w-3 h-3 animate-spin text-primary" />
-                <span className="text-xs text-primary">Uploading...</span>
+              <div className="flex items-center gap-2 mt-3">
+                <div className="h-1.5 flex-1 rounded-full bg-white/[0.04] overflow-hidden">
+                  <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-500 animate-shimmer" style={{ width: '60%' }} />
+                </div>
+                <span className="text-xs text-violet-400 font-medium">Uploading...</span>
               </div>
             )}
           </div>
@@ -96,7 +96,7 @@ export function FileUpload({ onFileSelect, file, onClear, isUploading, maxSizeMb
             <Button
               variant="ghost"
               size="sm"
-              className="flex-shrink-0 h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+              className="flex-shrink-0 h-9 w-9 p-0 rounded-xl text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition-all"
               onClick={() => {
                 onClear()
                 setPreview(null)
@@ -115,11 +115,11 @@ export function FileUpload({ onFileSelect, file, onClear, isUploading, maxSizeMb
     <div>
       <div
         className={`
-          relative rounded-2xl border-2 border-dashed p-10 text-center cursor-pointer
-          transition-all duration-200
+          relative rounded-2xl border-2 border-dashed p-12 text-center cursor-pointer
+          transition-all duration-300
           ${dragActive
-            ? "border-primary bg-primary/5 scale-[1.01]"
-            : "border-border/50 hover:border-primary/50 hover:bg-white/[0.02]"
+            ? "border-violet-500/50 bg-violet-500/5 scale-[1.01] shadow-lg shadow-violet-500/10"
+            : "border-white/[0.08] hover:border-violet-500/30 hover:bg-white/[0.02]"
           }
         `}
         onDragOver={(e) => { e.preventDefault(); setDragActive(true) }}
@@ -134,23 +134,27 @@ export function FileUpload({ onFileSelect, file, onClear, isUploading, maxSizeMb
           accept={ALL_ALLOWED.join(",")}
           onChange={handleChange}
         />
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Upload className="w-6 h-6 text-primary" />
+        <div className="flex flex-col items-center gap-5">
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+            dragActive
+              ? "bg-gradient-to-br from-violet-500/30 to-purple-500/30 scale-110"
+              : "bg-gradient-to-br from-violet-500/10 to-purple-500/10"
+          }`}>
+            <Upload className={`w-7 h-7 transition-colors ${dragActive ? "text-violet-300" : "text-violet-400"}`} />
           </div>
           <div>
-            <p className="text-base font-medium">
+            <p className="text-base font-semibold">
               {dragActive ? "Drop your file here" : "Drag & drop your content"}
             </p>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1.5">
               or click to browse · MP4, MOV, WebM, JPG, PNG · max {maxSizeMb}MB
             </p>
           </div>
         </div>
       </div>
       {error && (
-        <p className="text-sm text-destructive mt-3 flex items-center gap-1.5">
-          <X className="w-3.5 h-3.5" />
+        <p className="text-sm text-rose-400 mt-3 flex items-center gap-2 glass rounded-xl px-4 py-3">
+          <X className="w-4 h-4 flex-shrink-0" />
           {error}
         </p>
       )}
